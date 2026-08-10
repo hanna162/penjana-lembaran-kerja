@@ -1,2 +1,2 @@
-# penjana-lembaran-kerja
-jana latihan 
+# penjana-lembaran-kerja-matematik
+jana latihan matematik
