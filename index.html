@@ -4,30 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lembaran Kerja Bawah Laut - 50 Pages</title>
-    <!-- Tailwind CSS untuk styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Gaya khusus untuk cetakan A4 */
-        @page {
-            size: A4;
-            margin: 0;
-        }
-        
-        body {
-            background-color: #f1f5f9;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        /* SETUP KHUSUS UNTUK KERTAS A4 */
+        :root {
+            --a4-width: 210mm;
+            --a4-height: 296mm; /* Kurang 1mm dari 297mm untuk elak extra page */
         }
 
+        body {
+            background-color: #f1f5f9;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Bekas utama setiap muka surat */
         .print-page {
-            width: 210mm;
-            height: 297mm;
-            margin: 0 auto;
+            width: var(--a4-width);
+            height: var(--a4-height);
+            margin: 20px auto;
             background-color: white;
             position: relative;
             box-sizing: border-box;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* TETAPAN KETIKA MENCETAK (PRINT MEDIA QUERY) */
+        @page {
+            size: A4;
+            margin: 0mm; /* Kosongkan margin browser */
         }
 
         @media print {
@@ -39,50 +49,52 @@
             .no-print {
                 display: none !important;
             }
-            .print-page {
-                margin: 0;
-                padding: 0;
-                page-break-after: always;
-                box-shadow: none !important;
-                border: none !important;
-            }
             #worksheet-container {
                 margin: 0 !important;
                 padding: 0 !important;
-                gap: 0 !important;
+                background-color: transparent !important;
+            }
+            .print-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                page-break-after: always; /* Paksa muka surat baharu */
+                page-break-inside: avoid;
+            }
+            /* Buang border luaran jika browser pandai tambah border */
+            html, body {
+                width: var(--a4-width);
+                height: 100%;
             }
         }
         
         .font-mono {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
         }
     </style>
 </head>
 <body>
 
-    <!-- Panel Kawalan (Tidak akan dicetak) -->
+    <!-- Panel Kawalan -->
     <div class="no-print sticky top-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-md border-b-4 border-cyan-500">
         <div>
-            <h1 class="text-2xl font-bold text-cyan-700">🐠 Penjana Lembaran Kerja (50 Muka Surat)</h1>
-            <p class="text-sm text-slate-600 font-medium">
-                Campuran format: Mendatar & Bentuk Lazim untuk semua aras.
-            </p>
+            <h1 class="text-xl font-bold text-cyan-700">🐠 Penjana Lembaran Kerja (50 Muka Surat)</h1>
+            <p class="text-xs text-slate-500 mt-1">Tema: Bawah Laut</p>
         </div>
         <div class="flex space-x-3">
-            <button onclick="generateWorksheets()" class="flex items-center rounded-xl bg-amber-400 px-4 py-2 font-bold text-amber-950 shadow-sm hover:bg-amber-300 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
+            <button onclick="generateWorksheets()" class="flex items-center rounded-lg bg-amber-400 px-4 py-2 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
                 Jana Semula
             </button>
-            <button onclick="window.print()" class="flex items-center rounded-xl bg-cyan-600 px-6 py-2 font-bold text-white shadow-sm hover:bg-cyan-500 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
-                Cetak Semua (PDF)
+            <button onclick="window.print()" class="flex items-center rounded-lg bg-cyan-600 px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-cyan-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                Cetak Semua
             </button>
         </div>
     </div>
 
-    <!-- Container Utama untuk Muka Surat -->
-    <div id="worksheet-container" class="flex flex-col items-center py-8 space-y-8 bg-slate-100 w-full">
-        <div id="loading" class="text-2xl font-bold text-cyan-600 my-20">Sila tunggu, menjana 50 Muka Surat... 🐢🐡🐠</div>
+    <!-- Container Utama -->
+    <div id="worksheet-container" class="flex flex-col items-center bg-slate-200 w-full py-4">
+        <div id="loading" class="text-xl font-bold text-cyan-600 my-20">Sila tunggu, menyusun 50 Muka Surat A4... 🐢</div>
     </div>
 
     <script>
@@ -96,7 +108,6 @@
             return SEA_ICONS[getRandomInt(0, SEA_ICONS.length - 1)];
         }
 
-        // Fungsi bantu untuk mendapatkan soalan matematik mengikut had jumlah
         function getMathProblem(maxSum) {
             let a, b;
             if (maxSum === 10) {
@@ -123,7 +134,6 @@
             container.innerHTML = ''; 
             let htmlContent = '';
 
-            // Loop untuk 50 muka surat
             for (let p = 1; p <= 50; p++) {
                 
                 let maxSum, levelTitle;
@@ -140,49 +150,49 @@
                 }
 
                 let pageHtml = `
-                <div class="print-page shadow-2xl p-4">
-                    <!-- Hiasan Sempadan Solid & Putus-putus -->
-                    <div class="absolute inset-4 border-[6px] border-cyan-600 rounded-[2rem] pointer-events-none z-0"></div>
-                    <div class="absolute inset-6 border-[3px] border-dashed border-cyan-300 rounded-[1.5rem] pointer-events-none z-0"></div>
+                <div class="print-page p-6">
                     
-                    <div class="w-full px-12 pt-10 pb-6 flex-1 flex flex-col z-10 box-border h-full relative">
+                    <!-- Hiasan Sempadan -->
+                    <div class="absolute inset-4 border-[4px] border-cyan-600 rounded-[1.5rem] pointer-events-none z-0"></div>
+                    <div class="absolute inset-[1.25rem] border-[2px] border-dashed border-cyan-300 rounded-[1.2rem] pointer-events-none z-0"></div>
+                    
+                    <div class="w-full h-full flex flex-col z-10 px-4 py-2 relative">
                         
                         <!-- Bahagian Header -->
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="border-4 border-cyan-800 rounded-2xl p-3 bg-white shadow-md">
-                                <h2 class="text-2xl font-black text-cyan-900 leading-tight">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="border-[3px] border-cyan-800 rounded-xl px-4 py-2 bg-white shadow-sm">
+                                <h2 class="text-xl font-black text-cyan-900 leading-tight">
                                     Misi Matematik 🐳<br />
-                                    <span class="text-lg text-cyan-600">Tahap: Hasil Tambah ${levelTitle}</span>
+                                    <span class="text-sm text-cyan-600">Tahap: Hasil Tambah ${levelTitle}</span>
                                 </h2>
                             </div>
                             <div class="flex items-center">
-                                <div class="text-right mr-4">
-                                    <div class="font-bold text-cyan-900 text-lg mb-1 flex items-center justify-end">NAMA: <div class="ml-2 w-48 border-b-2 border-cyan-800"></div></div>
-                                    <div class="font-bold text-cyan-900 text-lg flex items-center justify-end">TARIKH: <div class="ml-2 w-32 border-b-2 border-cyan-800"></div></div>
+                                <div class="text-right mr-3">
+                                    <div class="font-bold text-cyan-900 text-sm mb-1 flex items-center justify-end">NAMA: <div class="ml-2 w-40 border-b-2 border-cyan-800"></div></div>
+                                    <div class="font-bold text-cyan-900 text-sm flex items-center justify-end">TARIKH: <div class="ml-2 w-24 border-b-2 border-cyan-800"></div></div>
                                 </div>
-                                <span class="text-xl font-bold text-cyan-800 bg-cyan-100 p-3 rounded-full border-2 border-cyan-300">${p}</span>
+                                <span class="text-lg font-bold text-cyan-800 bg-cyan-100 w-10 h-10 flex items-center justify-center rounded-full border-2 border-cyan-300">${p}</span>
                             </div>
                         </div>
 
-                        <!-- SEKSYEN 1: SOALAN MENDATAR (6 Soalan) -->
-                        <div class="w-full mb-2">
-                            <h3 class="font-bold text-cyan-700 text-xl mb-3 flex items-center">
+                        <!-- SEKSYEN A: MENDATAR -->
+                        <div class="w-full mb-3">
+                            <h3 class="font-bold text-cyan-700 text-lg mb-2 flex items-center">
                                 <span class="mr-2">A. Selesaikan (Mendatar)</span> 🐡
                             </h3>
-                            <div class="grid grid-cols-2 gap-x-10 gap-y-4">
+                            <div class="grid grid-cols-2 gap-x-8 gap-y-3">
                 `;
 
-                // Jana 6 soalan mendatar
                 for (let i = 0; i < 6; i++) {
                     let prob = getMathProblem(maxSum);
                     pageHtml += `
-                                <div class="flex items-center justify-between bg-cyan-50/70 border-2 border-cyan-300 rounded-2xl px-5 py-3 shadow-sm">
-                                    <span class="text-3xl font-bold w-14 text-center text-slate-700 font-mono">${prob.a}</span>
-                                    <span class="text-3xl font-bold text-cyan-600">+</span>
-                                    <span class="text-3xl font-bold w-14 text-center text-slate-700 font-mono">${prob.b}</span>
-                                    <span class="text-3xl font-bold text-cyan-600 mr-2">=</span>
-                                    <div class="relative w-20 h-12 bg-white border-2 border-cyan-400 rounded-xl flex items-center justify-center shadow-inner">
-                                        <span class="absolute opacity-20 text-3xl">${prob.icon}</span>
+                                <div class="flex items-center justify-between bg-cyan-50/70 border-2 border-cyan-300 rounded-xl px-4 py-2">
+                                    <span class="text-2xl font-bold w-12 text-center text-slate-700 font-mono">${prob.a}</span>
+                                    <span class="text-2xl font-bold text-cyan-600">+</span>
+                                    <span class="text-2xl font-bold w-12 text-center text-slate-700 font-mono">${prob.b}</span>
+                                    <span class="text-2xl font-bold text-cyan-600 mr-1">=</span>
+                                    <div class="relative w-16 h-10 bg-white border-2 border-cyan-400 rounded-lg flex items-center justify-center">
+                                        <span class="absolute opacity-20 text-2xl">${prob.icon}</span>
                                     </div>
                                 </div>
                     `;
@@ -193,34 +203,32 @@
                         </div>
 
                         <!-- Garisan Pemisah -->
-                        <div class="w-full border-t-4 border-dotted border-cyan-300 my-6"></div>
+                        <div class="w-full border-t-2 border-dashed border-cyan-400 my-4"></div>
 
-                        <!-- SEKSYEN 2: SOALAN BENTUK LAZIM (6 Soalan) -->
+                        <!-- SEKSYEN B: BENTUK LAZIM -->
                         <div class="w-full flex-1 flex flex-col">
-                            <h3 class="font-bold text-cyan-700 text-xl mb-3 flex items-center">
+                            <h3 class="font-bold text-cyan-700 text-lg mb-4 flex items-center">
                                 <span class="mr-2">B. Selesaikan (Bentuk Lazim)</span> 🐙
                             </h3>
-                            <div class="grid grid-cols-3 gap-x-8 gap-y-6 my-auto">
+                            <div class="grid grid-cols-3 gap-x-6 gap-y-4 my-auto px-2">
                 `;
 
-                // Jana 6 soalan bentuk lazim
                 for (let i = 0; i < 6; i++) {
                     let prob = getMathProblem(maxSum);
                     pageHtml += `
-                                <div class="relative border-[3px] border-cyan-800 rounded-[1.5rem] p-5 bg-white shadow-sm flex flex-col items-end mx-auto w-[160px]">
-                                    <div class="absolute -top-4 -right-4 text-2xl bg-cyan-50 rounded-full p-1 border-2 border-cyan-200">
+                                <div class="relative border-2 border-cyan-800 rounded-2xl p-4 bg-white shadow-sm flex flex-col items-end mx-auto w-[130px]">
+                                    <div class="absolute -top-3 -right-3 text-xl bg-cyan-50 rounded-full p-1 border border-cyan-200">
                                         ${prob.icon}
                                     </div>
-
-                                    <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider font-mono mr-2">
+                                    <div class="text-3xl leading-none font-bold text-slate-800 tracking-widest font-mono mr-1">
                                         ${prob.a}
                                     </div>
-                                    <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider flex justify-between w-full font-mono mt-2 mb-2">
+                                    <div class="text-3xl leading-none font-bold text-slate-800 tracking-widest flex justify-between w-full font-mono mt-2 mb-1">
                                         <span>+</span>
-                                        <span class="mr-2">${prob.b}</span>
+                                        <span class="mr-1">${prob.b}</span>
                                     </div>
-                                    <div class="w-full border-t-[4px] border-slate-800 mt-2"></div>
-                                    <div class="w-full border-t-[4px] border-slate-800 mt-10 mb-1"></div>
+                                    <div class="w-full border-t-[3px] border-slate-800 mt-1"></div>
+                                    <div class="w-full border-t-[3px] border-slate-800 mt-8 mb-1"></div>
                                 </div>
                     `;
                 }
@@ -229,9 +237,9 @@
                             </div>
                         </div>
 
-                        <!-- Hiasan Penjuru -->
-                        <div class="absolute bottom-6 left-8 text-4xl">🐚</div>
-                        <div class="absolute bottom-6 right-8 text-4xl">🦀</div>
+                        <!-- Hiasan Bawah -->
+                        <div class="absolute bottom-1 left-2 text-3xl">🐚</div>
+                        <div class="absolute bottom-1 right-2 text-3xl">🦀</div>
                         
                     </div>
                 </div>
