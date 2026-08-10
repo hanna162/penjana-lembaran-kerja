@@ -10,7 +10,7 @@
         /* SETUP KHUSUS UNTUK KERTAS A4 */
         :root {
             --a4-width: 210mm;
-            --a4-height: 296mm; /* Kurang 1mm dari 297mm untuk elak extra page */
+            --a4-height: 296mm; 
         }
 
         body {
@@ -20,7 +20,6 @@
             padding: 0;
         }
 
-        /* Bekas utama setiap muka surat */
         .print-page {
             width: var(--a4-width);
             height: var(--a4-height);
@@ -34,10 +33,9 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        /* TETAPAN KETIKA MENCETAK (PRINT MEDIA QUERY) */
         @page {
             size: A4;
-            margin: 0mm; /* Kosongkan margin browser */
+            margin: 0mm; 
         }
 
         @media print {
@@ -57,10 +55,9 @@
             .print-page {
                 margin: 0 !important;
                 box-shadow: none !important;
-                page-break-after: always; /* Paksa muka surat baharu */
+                page-break-after: always; 
                 page-break-inside: avoid;
             }
-            /* Buang border luaran jika browser pandai tambah border */
             html, body {
                 width: var(--a4-width);
                 height: 100%;
@@ -78,7 +75,16 @@
     <div class="no-print sticky top-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-md border-b-4 border-cyan-500">
         <div>
             <h1 class="text-xl font-bold text-cyan-700">🐠 Penjana Lembaran Kerja (50 Muka Surat)</h1>
-            <p class="text-xs text-slate-500 mt-1">Tema: Bawah Laut</p>
+            <div class="flex items-center space-x-3 mt-2">
+                <label for="operation-select" class="text-sm font-bold text-slate-600">Pilih Operasi:</label>
+                <select id="operation-select" onchange="generateWorksheets()" class="bg-cyan-50 border border-cyan-300 text-cyan-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block p-2 font-bold cursor-pointer">
+                    <option value="+">Tambah (+)</option>
+                    <option value="-">Tolak (-)</option>
+                    <option value="x">Darab (x)</option>
+                    <option value="÷">Bahagi (÷)</option>
+                    <option value="campuran">Campuran Semua</option>
+                </select>
+            </div>
         </div>
         <div class="flex space-x-3">
             <button onclick="generateWorksheets()" class="flex items-center rounded-lg bg-amber-400 px-4 py-2 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-300">
@@ -108,45 +114,89 @@
             return SEA_ICONS[getRandomInt(0, SEA_ICONS.length - 1)];
         }
 
-        function getMathProblem(maxSum) {
-            let a, b;
-            if (maxSum === 10) {
-                a = getRandomInt(1, 9);
-                b = getRandomInt(1, 10 - a);
-            } else if (maxSum === 15) {
-                a = getRandomInt(1, 14);
-                b = getRandomInt(1, 15 - a);
-            } else if (maxSum === 20) {
-                a = getRandomInt(2, 18);
-                b = getRandomInt(1, 20 - a);
-            } else if (maxSum === 99) {
-                a = getRandomInt(10, 89);
-                b = getRandomInt(5, 99 - a);
-            } else if (maxSum === 200) {
-                a = getRandomInt(30, 170);
-                b = getRandomInt(15, 199 - a);
+        // Fungsi logik soalan berdasarkan tahap (maxNum) dan operasi
+        function getMathProblem(maxNum, selectedOp) {
+            let op = selectedOp;
+            if (op === 'campuran') {
+                const ops = ['+', '-', 'x', '÷'];
+                op = ops[getRandomInt(0, 3)];
             }
-            return { a, b, icon: getRandomIcon() };
+
+            let a, b;
+            let isDiv = false;
+
+            if (op === '+') {
+                if (maxNum <= 20) {
+                    a = getRandomInt(1, maxNum - 1);
+                    b = getRandomInt(1, maxNum - a);
+                } else if (maxNum === 99) {
+                    a = getRandomInt(10, 89);
+                    b = getRandomInt(5, 99 - a);
+                } else {
+                    a = getRandomInt(30, 170);
+                    b = getRandomInt(15, 199 - a);
+                }
+            } 
+            else if (op === '-') {
+                // Pastikan A > B supaya jawapan tidak negatif
+                if (maxNum <= 20) {
+                    a = getRandomInt(2, maxNum);
+                    b = getRandomInt(1, a - 1);
+                } else if (maxNum === 99) {
+                    a = getRandomInt(20, 99);
+                    b = getRandomInt(5, a - 1);
+                } else {
+                    a = getRandomInt(50, 199);
+                    b = getRandomInt(10, a - 1);
+                }
+            } 
+            else if (op === 'x') {
+                // Skala nombor untuk darab
+                if (maxNum === 10) { a = getRandomInt(1, 3); b = getRandomInt(1, 3); }
+                else if (maxNum === 15) { a = getRandomInt(2, 4); b = getRandomInt(2, 3); }
+                else if (maxNum === 20) { a = getRandomInt(2, 5); b = getRandomInt(2, 4); }
+                else if (maxNum === 99) { a = getRandomInt(3, 9); b = getRandomInt(3, 9); }
+                else { a = getRandomInt(4, 12); b = getRandomInt(3, 12); }
+            } 
+            else if (op === '÷') {
+                // Logik bahagi: cipta sifir yang tepat tanpa baki
+                isDiv = true;
+                let maxFactor = 3;
+                if (maxNum === 15) maxFactor = 4;
+                if (maxNum === 20) maxFactor = 5;
+                if (maxNum === 99) maxFactor = 9;
+                if (maxNum === 200) maxFactor = 12;
+
+                let divisor = getRandomInt(2, maxFactor);
+                let quotient = getRandomInt(2, maxFactor);
+                let dividend = divisor * quotient;
+                
+                a = dividend;
+                b = divisor;
+            }
+
+            return { a, b, opSign: op, isDiv, icon: getRandomIcon() };
         }
 
         function generateWorksheets() {
             const container = document.getElementById('worksheet-container');
+            const selectedOp = document.getElementById('operation-select').value;
             container.innerHTML = ''; 
             let htmlContent = '';
 
             for (let p = 1; p <= 50; p++) {
                 
-                let maxSum, levelTitle;
+                let maxNum, levelTitle;
                 if (p <= 5) {
-                    maxSum = 10; levelTitle = "Bawah 10";
+                    maxNum = 10; levelTitle = "Bawah 10";
                 } else if (p <= 10) {
-                    maxSum = 15; levelTitle = "Bawah 15";
+                    maxNum = 15; levelTitle = "Bawah 15";
                 } else if (p <= 15) {
-                    maxSum = 20; levelTitle = "Bawah 20";
+                    maxNum = 20; levelTitle = "Bawah 20";
                 } else if (p <= 30) {
-                    maxSum = 99; levelTitle = "Bawah 100";
+                    maxNum = 99; levelTitle = "Bawah 100";
                 } else {
-                    maxSum = 200; levelTitle = "Bawah 200";
+                    maxNum = 200; levelTitle = "Bawah 200";
                 }
 
                 let pageHtml = `
@@ -163,7 +213,7 @@
                             <div class="border-[3px] border-cyan-800 rounded-xl px-4 py-2 bg-white shadow-sm">
                                 <h2 class="text-xl font-black text-cyan-900 leading-tight">
                                     Misi Matematik 🐳<br />
-                                    <span class="text-sm text-cyan-600">Tahap: Hasil Tambah ${levelTitle}</span>
+                                    <span class="text-sm text-cyan-600">Tahap: Nilai ${levelTitle}</span>
                                 </h2>
                             </div>
                             <div class="flex items-center">
@@ -184,11 +234,11 @@
                 `;
 
                 for (let i = 0; i < 6; i++) {
-                    let prob = getMathProblem(maxSum);
+                    let prob = getMathProblem(maxNum, selectedOp);
                     pageHtml += `
                                 <div class="flex items-center justify-between bg-cyan-50/70 border-2 border-cyan-300 rounded-xl px-4 py-2">
                                     <span class="text-2xl font-bold w-12 text-center text-slate-700 font-mono">${prob.a}</span>
-                                    <span class="text-2xl font-bold text-cyan-600">+</span>
+                                    <span class="text-2xl font-bold text-cyan-600">${prob.opSign}</span>
                                     <span class="text-2xl font-bold w-12 text-center text-slate-700 font-mono">${prob.b}</span>
                                     <span class="text-2xl font-bold text-cyan-600 mr-1">=</span>
                                     <div class="relative w-16 h-10 bg-white border-2 border-cyan-400 rounded-lg flex items-center justify-center">
@@ -214,9 +264,32 @@
                 `;
 
                 for (let i = 0; i < 6; i++) {
-                    let prob = getMathProblem(maxSum);
-                    pageHtml += `
-                                <div class="relative border-2 border-cyan-800 rounded-2xl p-4 bg-white shadow-sm flex flex-col items-end mx-auto w-[130px]">
+                    let prob = getMathProblem(maxNum, selectedOp);
+                    
+                    if (prob.isDiv) {
+                        // Paparan Bentuk Lazim Khas Untuk BAHAGI (Kurungan Panjang)
+                        pageHtml += `
+                                <div class="relative border-2 border-cyan-800 rounded-2xl p-4 bg-white shadow-sm flex flex-col items-center mx-auto w-[130px] min-h-[145px]">
+                                    <div class="absolute -top-3 -right-3 text-xl bg-cyan-50 rounded-full p-1 border border-cyan-200">
+                                        ${prob.icon}
+                                    </div>
+                                    <div class="flex items-end justify-center w-full mt-4">
+                                        <span class="text-3xl font-bold font-mono mr-2">${prob.b}</span>
+                                        <div class="flex flex-col">
+                                            <!-- Ruang kosong untuk murid tulis jawapan atas garisan -->
+                                            <div class="h-6"></div> 
+                                            <!-- Garisan pembahagi (Rumah Bahagi) -->
+                                            <div class="border-l-[3px] border-t-[3px] border-slate-800 rounded-tl-xl pl-3 pt-2 pb-1 pr-1 min-w-[3rem]">
+                                                <span class="text-3xl leading-none font-bold text-slate-800 tracking-widest font-mono">${prob.a}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        `;
+                    } else {
+                        // Paparan Bentuk Lazim Standard untuk Tambah/Tolak/Darab
+                        pageHtml += `
+                                <div class="relative border-2 border-cyan-800 rounded-2xl p-4 bg-white shadow-sm flex flex-col items-end mx-auto w-[130px] min-h-[145px]">
                                     <div class="absolute -top-3 -right-3 text-xl bg-cyan-50 rounded-full p-1 border border-cyan-200">
                                         ${prob.icon}
                                     </div>
@@ -224,13 +297,14 @@
                                         ${prob.a}
                                     </div>
                                     <div class="text-3xl leading-none font-bold text-slate-800 tracking-widest flex justify-between w-full font-mono mt-2 mb-1">
-                                        <span>+</span>
+                                        <span>${prob.opSign}</span>
                                         <span class="mr-1">${prob.b}</span>
                                     </div>
                                     <div class="w-full border-t-[3px] border-slate-800 mt-1"></div>
                                     <div class="w-full border-t-[3px] border-slate-800 mt-8 mb-1"></div>
                                 </div>
-                    `;
+                        `;
+                    }
                 }
 
                 pageHtml += `
@@ -251,6 +325,7 @@
             container.innerHTML = htmlContent;
         }
 
+        // Jana soalan secara automatik bila laman web dibuka
         window.onload = function() {
             setTimeout(generateWorksheets, 100);
         };
