@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lembaran Kerja Bawah Laut</title>
+    <title>Lembaran Kerja Bawah Laut - 50 Pages</title>
     <!-- Tailwind CSS untuk styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -14,8 +14,8 @@
         }
         
         body {
-            background-color: #f1f5f9; /* bg-slate-100 */
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: #f1f5f9;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         .print-page {
@@ -28,7 +28,6 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
 
         @media print {
@@ -54,7 +53,6 @@
             }
         }
         
-        /* Font khusus jika diperlukan */
         .font-mono {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
         }
@@ -65,185 +63,176 @@
     <!-- Panel Kawalan (Tidak akan dicetak) -->
     <div class="no-print sticky top-0 z-50 flex items-center justify-between bg-white px-6 py-4 shadow-md border-b-4 border-cyan-500">
         <div>
-            <h1 class="text-2xl font-bold text-cyan-700">🐠 Penjana Lembaran Kerja</h1>
-            <p class="text-sm text-slate-500">Jumlah: 40 Muka Surat (15 Aras Rendah, 25 Aras Tinggi)</p>
+            <h1 class="text-2xl font-bold text-cyan-700">🐠 Penjana Lembaran Kerja (50 Muka Surat)</h1>
+            <p class="text-sm text-slate-600 font-medium">
+                Campuran format: Mendatar & Bentuk Lazim untuk semua aras.
+            </p>
         </div>
-        <div class="flex space-x-4">
+        <div class="flex space-x-3">
             <button onclick="generateWorksheets()" class="flex items-center rounded-xl bg-amber-400 px-4 py-2 font-bold text-amber-950 shadow-sm hover:bg-amber-300 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
-                Jana Soalan Baharu
+                Jana Semula
             </button>
             <button onclick="window.print()" class="flex items-center rounded-xl bg-cyan-600 px-6 py-2 font-bold text-white shadow-sm hover:bg-cyan-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
-                Cetak (PDF)
+                Cetak Semua (PDF)
             </button>
         </div>
     </div>
 
     <!-- Container Utama untuk Muka Surat -->
     <div id="worksheet-container" class="flex flex-col items-center py-8 space-y-8 bg-slate-100 w-full">
-        <!-- Muka surat akan dijana oleh JavaScript di sini -->
-        <div id="loading" class="text-2xl font-bold text-cyan-600 my-20">Menjana 40 Muka Surat... 🐢🐡🐠</div>
+        <div id="loading" class="text-2xl font-bold text-cyan-600 my-20">Sila tunggu, menjana 50 Muka Surat... 🐢🐡🐠</div>
     </div>
 
     <script>
         const SEA_ICONS = ['🐠', '🦀', '🐙', '🐢', '🐳', '🐬', '🐡', '🦑', '🐚'];
 
-        // Fungsi untuk mendapatkan nombor rawak
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Fungsi untuk mendapatkan ikon rawak
         function getRandomIcon() {
             return SEA_ICONS[getRandomInt(0, SEA_ICONS.length - 1)];
         }
 
-        // Fungsi utama untuk menjana lembaran kerja
+        // Fungsi bantu untuk mendapatkan soalan matematik mengikut had jumlah
+        function getMathProblem(maxSum) {
+            let a, b;
+            if (maxSum === 10) {
+                a = getRandomInt(1, 9);
+                b = getRandomInt(1, 10 - a);
+            } else if (maxSum === 15) {
+                a = getRandomInt(1, 14);
+                b = getRandomInt(1, 15 - a);
+            } else if (maxSum === 20) {
+                a = getRandomInt(2, 18);
+                b = getRandomInt(1, 20 - a);
+            } else if (maxSum === 99) {
+                a = getRandomInt(10, 89);
+                b = getRandomInt(5, 99 - a);
+            } else if (maxSum === 200) {
+                a = getRandomInt(30, 170);
+                b = getRandomInt(15, 199 - a);
+            }
+            return { a, b, icon: getRandomIcon() };
+        }
+
         function generateWorksheets() {
             const container = document.getElementById('worksheet-container');
-            container.innerHTML = ''; // Kosongkan container
-
+            container.innerHTML = ''; 
             let htmlContent = '';
 
-            // ==========================================
-            // JANA 15 MUKA SURAT ARAS RENDAH (Bawah 20)
-            // ==========================================
-            for (let p = 0; p < 15; p++) {
-                let pageNum = p + 1;
+            // Loop untuk 50 muka surat
+            for (let p = 1; p <= 50; p++) {
                 
-                // Header Aras Rendah
-                let pageHtml = `
-                <div class="print-page shadow-2xl p-4">
-                    <!-- Hiasan Sempadan -->
-                    <div class="absolute inset-4 border-[6px] border-dashed border-cyan-300 rounded-[2rem] pointer-events-none"></div>
-                    
-                    <!-- Hiasan Penjuru -->
-                    <div class="absolute top-6 left-6 text-4xl">🦀</div>
-                    <div class="absolute top-6 right-8 text-4xl">🐠</div>
-                    <div class="absolute bottom-6 left-8 text-4xl">🐚</div>
-                    <div class="absolute bottom-6 right-6 text-4xl">🐳</div>
-
-                    <div class="w-full px-12 pt-8 pb-4 flex-1 flex flex-col z-10 box-border h-full">
-                        <!-- Bahagian Header -->
-                        <div class="flex justify-between items-end mb-4 font-bold text-lg text-cyan-900 border-b-2 border-cyan-100 pb-2">
-                            <div class="flex items-center">
-                                NAMA: <div class="ml-2 w-48 border-b-2 border-cyan-800"></div>
-                            </div>
-                            <div class="flex items-center">
-                                TARIKH: <div class="ml-2 w-32 border-b-2 border-cyan-800"></div>
-                            </div>
-                            <div class="text-xl">${pageNum}</div>
-                        </div>
-
-                        <h2 class="text-3xl font-black text-center text-cyan-700 mb-6">
-                            Jom Tambah Bersama! 🐢
-                        </h2>
-
-                        <!-- Grid Soalan -->
-                        <div class="flex-1 grid grid-cols-2 gap-x-12 gap-y-5 content-start">
-                `;
-
-                // Jana 14 soalan untuk Aras Rendah
-                for (let i = 0; i < 14; i++) {
-                    let a = getRandomInt(1, 15);
-                    let maxB = 20 - a;
-                    let b = getRandomInt(1, maxB);
-                    let icon = getRandomIcon();
-
-                    pageHtml += `
-                            <div class="flex items-center justify-between bg-cyan-50/50 border-2 border-cyan-300 rounded-2xl px-6 py-3 shadow-sm">
-                                <span class="text-3xl font-bold w-8 text-center text-slate-700">${a}</span>
-                                <span class="text-3xl font-bold text-cyan-600">+</span>
-                                <span class="text-3xl font-bold w-8 text-center text-slate-700">${b}</span>
-                                <span class="text-3xl font-bold text-cyan-600">=</span>
-                                <div class="relative w-16 h-12 bg-white border-2 border-cyan-400 rounded-xl flex items-center justify-center shadow-inner">
-                                    <span class="absolute opacity-20 text-3xl">${icon}</span>
-                                </div>
-                            </div>
-                    `;
+                let maxSum, levelTitle;
+                if (p <= 5) {
+                    maxSum = 10; levelTitle = "Bawah 10";
+                } else if (p <= 10) {
+                    maxSum = 15; levelTitle = "Bawah 15";
+                } else if (p <= 15) {
+                    maxSum = 20; levelTitle = "Bawah 20";
+                } else if (p <= 30) {
+                    maxSum = 99; levelTitle = "Bawah 100";
+                } else {
+                    maxSum = 200; levelTitle = "Bawah 200";
                 }
 
-                pageHtml += `
-                        </div>
-                    </div>
-                </div>
-                `;
-                htmlContent += pageHtml;
-            }
-
-            // ==========================================
-            // JANA 25 MUKA SURAT ARAS TINGGI (Bawah 100)
-            // ==========================================
-            for (let p = 0; p < 25; p++) {
-                let pageNum = p + 16;
-                
                 let pageHtml = `
                 <div class="print-page shadow-2xl p-4">
-                    <!-- Hiasan Sempadan Solid -->
-                    <div class="absolute inset-4 border-[8px] border-cyan-600 rounded-[2rem] pointer-events-none"></div>
-                    <div class="absolute inset-7 border-[3px] border-cyan-300 rounded-[1.5rem] pointer-events-none"></div>
+                    <!-- Hiasan Sempadan Solid & Putus-putus -->
+                    <div class="absolute inset-4 border-[6px] border-cyan-600 rounded-[2rem] pointer-events-none z-0"></div>
+                    <div class="absolute inset-6 border-[3px] border-dashed border-cyan-300 rounded-[1.5rem] pointer-events-none z-0"></div>
                     
-                    <div class="w-full px-12 pt-10 pb-6 flex-1 flex flex-col justify-between z-10 box-border h-full">
+                    <div class="w-full px-12 pt-10 pb-6 flex-1 flex flex-col z-10 box-border h-full relative">
+                        
                         <!-- Bahagian Header -->
-                        <div class="flex justify-between items-start mb-2">
+                        <div class="flex justify-between items-start mb-6">
                             <div class="border-4 border-cyan-800 rounded-2xl p-3 bg-white shadow-md">
                                 <h2 class="text-2xl font-black text-cyan-900 leading-tight">
-                                    Cabaran Minda<br />Hasil Tambah
+                                    Misi Matematik 🐳<br />
+                                    <span class="text-lg text-cyan-600">Tahap: Hasil Tambah ${levelTitle}</span>
                                 </h2>
                             </div>
-                            <div class="flex gap-4 items-center">
-                                <span class="text-5xl animate-bounce" style="animation-duration: 2s;">🐙</span>
-                                <span class="text-5xl">🐬</span>
-                                <span class="text-xl font-bold text-cyan-800 ml-4">${pageNum}</span>
+                            <div class="flex items-center">
+                                <div class="text-right mr-4">
+                                    <div class="font-bold text-cyan-900 text-lg mb-1 flex items-center justify-end">NAMA: <div class="ml-2 w-48 border-b-2 border-cyan-800"></div></div>
+                                    <div class="font-bold text-cyan-900 text-lg flex items-center justify-end">TARIKH: <div class="ml-2 w-32 border-b-2 border-cyan-800"></div></div>
+                                </div>
+                                <span class="text-xl font-bold text-cyan-800 bg-cyan-100 p-3 rounded-full border-2 border-cyan-300">${p}</span>
                             </div>
                         </div>
 
-                        <!-- Grid Soalan Bentuk Lazim -->
-                        <div class="grid grid-cols-3 gap-x-8 gap-y-6 my-auto py-4">
+                        <!-- SEKSYEN 1: SOALAN MENDATAR (6 Soalan) -->
+                        <div class="w-full mb-2">
+                            <h3 class="font-bold text-cyan-700 text-xl mb-3 flex items-center">
+                                <span class="mr-2">A. Selesaikan (Mendatar)</span> 🐡
+                            </h3>
+                            <div class="grid grid-cols-2 gap-x-10 gap-y-4">
                 `;
 
-                // Jana 12 soalan bentuk lazim
-                for (let i = 0; i < 12; i++) {
-                    let a = getRandomInt(10, 89);
-                    let maxB = 99 - a;
-                    let minB = maxB >= 10 ? 10 : 1;
-                    let b = getRandomInt(minB, maxB);
-                    let icon = getRandomIcon();
-
+                // Jana 6 soalan mendatar
+                for (let i = 0; i < 6; i++) {
+                    let prob = getMathProblem(maxSum);
                     pageHtml += `
-                            <div class="relative border-[3px] border-cyan-800 rounded-[1.5rem] p-5 bg-white shadow-sm flex flex-col items-end mx-auto w-[150px]">
-                                <!-- Ikon terapung kecil -->
-                                <div class="absolute -top-4 -right-4 text-2xl bg-cyan-50 rounded-full p-1 border-2 border-cyan-200">
-                                    ${icon}
+                                <div class="flex items-center justify-between bg-cyan-50/70 border-2 border-cyan-300 rounded-2xl px-5 py-3 shadow-sm">
+                                    <span class="text-3xl font-bold w-14 text-center text-slate-700 font-mono">${prob.a}</span>
+                                    <span class="text-3xl font-bold text-cyan-600">+</span>
+                                    <span class="text-3xl font-bold w-14 text-center text-slate-700 font-mono">${prob.b}</span>
+                                    <span class="text-3xl font-bold text-cyan-600 mr-2">=</span>
+                                    <div class="relative w-20 h-12 bg-white border-2 border-cyan-400 rounded-xl flex items-center justify-center shadow-inner">
+                                        <span class="absolute opacity-20 text-3xl">${prob.icon}</span>
+                                    </div>
                                 </div>
-
-                                <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider font-mono mr-2">
-                                    ${a}
-                                </div>
-                                <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider flex justify-between w-full font-mono mt-2 mb-2">
-                                    <span>+</span>
-                                    <span class="mr-2">${b}</span>
-                                </div>
-                                <!-- Garisan Jawapan -->
-                                <div class="w-full border-t-[4px] border-slate-800 mt-2"></div>
-                                <div class="w-full border-t-[4px] border-slate-800 mt-10 mb-1"></div>
-                            </div>
                     `;
                 }
 
                 pageHtml += `
+                            </div>
                         </div>
 
-                        <!-- Bahagian Bawah (Nama) -->
-                        <div class="flex justify-between items-end pt-2">
-                            <div class="flex items-center text-lg font-bold text-cyan-900">
-                                NAMA: <div class="ml-4 w-72 border-b-[3px] border-cyan-800"></div>
-                            </div>
-                            <div class="flex space-x-2 text-3xl">
-                                🦀 🐠 🐢
+                        <!-- Garisan Pemisah -->
+                        <div class="w-full border-t-4 border-dotted border-cyan-300 my-6"></div>
+
+                        <!-- SEKSYEN 2: SOALAN BENTUK LAZIM (6 Soalan) -->
+                        <div class="w-full flex-1 flex flex-col">
+                            <h3 class="font-bold text-cyan-700 text-xl mb-3 flex items-center">
+                                <span class="mr-2">B. Selesaikan (Bentuk Lazim)</span> 🐙
+                            </h3>
+                            <div class="grid grid-cols-3 gap-x-8 gap-y-6 my-auto">
+                `;
+
+                // Jana 6 soalan bentuk lazim
+                for (let i = 0; i < 6; i++) {
+                    let prob = getMathProblem(maxSum);
+                    pageHtml += `
+                                <div class="relative border-[3px] border-cyan-800 rounded-[1.5rem] p-5 bg-white shadow-sm flex flex-col items-end mx-auto w-[160px]">
+                                    <div class="absolute -top-4 -right-4 text-2xl bg-cyan-50 rounded-full p-1 border-2 border-cyan-200">
+                                        ${prob.icon}
+                                    </div>
+
+                                    <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider font-mono mr-2">
+                                        ${prob.a}
+                                    </div>
+                                    <div class="text-4xl leading-none font-bold text-slate-800 tracking-wider flex justify-between w-full font-mono mt-2 mb-2">
+                                        <span>+</span>
+                                        <span class="mr-2">${prob.b}</span>
+                                    </div>
+                                    <div class="w-full border-t-[4px] border-slate-800 mt-2"></div>
+                                    <div class="w-full border-t-[4px] border-slate-800 mt-10 mb-1"></div>
+                                </div>
+                    `;
+                }
+
+                pageHtml += `
                             </div>
                         </div>
+
+                        <!-- Hiasan Penjuru -->
+                        <div class="absolute bottom-6 left-8 text-4xl">🐚</div>
+                        <div class="absolute bottom-6 right-8 text-4xl">🦀</div>
+                        
                     </div>
                 </div>
                 `;
@@ -251,16 +240,14 @@
                 htmlContent += pageHtml;
             }
 
-            // Masukkan semua HTML yang dijana ke dalam container
             container.innerHTML = htmlContent;
         }
 
-        // Jalankan fungsi penjanaan sebaik sahaja halaman dimuatkan
         window.onload = function() {
-            // Berikan sedikit masa untuk menunjukkan animasi loading
             setTimeout(generateWorksheets, 100);
         };
     </script>
 </body>
 </html>
+
 
